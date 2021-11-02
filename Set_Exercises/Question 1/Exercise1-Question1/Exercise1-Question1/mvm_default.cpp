@@ -18,8 +18,8 @@
 
 #define BILLION 1000000000
 
-#define TIMES 1000
-#define N 4096
+#define TIMES 1000*20
+#define N 256
 
 #define ARITHMETICAL_OPS N*4 //change this
 
@@ -69,7 +69,6 @@ int main() {
         for (i = 0; i < N; i++)
             for (j = 0; j < N; j++)
                 Y[i] += A[i][j] * X[j];
-
 
 
 
