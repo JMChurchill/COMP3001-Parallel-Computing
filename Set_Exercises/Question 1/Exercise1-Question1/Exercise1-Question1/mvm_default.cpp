@@ -18,10 +18,13 @@
 
 #define BILLION 1000000000
 
-#define TIMES 1000*20
+#define TIMES 1000*300
 #define N 256
 
-#define ARITHMETICAL_OPS N*4 //change this
+
+
+
+#define ARITHMETICAL_OPS N*N*2 
 
 
 
