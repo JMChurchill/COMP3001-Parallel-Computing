@@ -138,6 +138,13 @@ void slow_routine(float alpha, float beta) {
 	_mm_set1_ps,	// -> Broadcast single-precision (32-bit) floating-point value a to all elements of dst.
 	_mm_hadd_ps.	// -> 
 	*/
+	//int ii, jj;
+	//int T = 1;
+	//for (ii = 0; ii < N; ii +=T) {
+	//	for (jj = 0; jj < N; jj+=T) {
+	//		
+	//	}
+	//}
 
 	unsigned int i, j;
 
@@ -146,7 +153,7 @@ void slow_routine(float alpha, float beta) {
 		num1 = _mm_load_ps1(&u1[i]);
 		num3 = _mm_load_ps1(&u2[i]);
 
-		for (j = 0; j < N; j+=4) {
+		for (j = 0; j < ((N / 4) * 4); j+=4) {
 			num4 = _mm_load_ps(&v2[j]);
 			num0 = _mm_load_ps(&A[i][j]);
 			num2 = _mm_load_ps(&v1[j]);
@@ -156,13 +163,16 @@ void slow_routine(float alpha, float beta) {
 			_mm_store_ps(&A[i][j], num0);
 			//A[i][j] = A[i][j] + (u1[i] * v1[j]) + (u2[i] * v2[j]);
 		}
+		for (; j < N; j++) {
+			A[i][j] = A[i][j] + u1[i] * v1[j] + u2[i] * v2[j];
+		}
 	}
 
 	__m128 num7, num8, num9, num10, num11, temp;
 	temp = _mm_set_ps(0.45f, 0.45f, 0.45f, 0.45f);
 	for (j = 0; j < N; j++) {
 		num7 = _mm_load_ps1(&y[j]);
-		for (i = 0; i < N; i += 4) {
+		for (i = 0; i < ((N / 4) * 4); i += 4) {
 			num8 = _mm_load_ps(&A[j][i]);
 			num9 = _mm_load_ps(&x[i]);
 
@@ -172,11 +182,14 @@ void slow_routine(float alpha, float beta) {
 
 			_mm_store_ps((float*)&x[i], num11);
 		}
+		for (; i < N; i++) {
+			x[i] = x[i] + beta * A[j][i] * y[j];
+		}
 	}
 
 	__m128 num12, num13, num14, num15, num16, num17, num18, num19, num20, num21, num22,num23,num24,num25,num26,num27,num28,num29,num30,num31, temp2;
 	temp2 = _mm_set_ps(0.23f, 0.23f, 0.23f, 0.23f);
-	for (i = 0; i < N; i+=4) {
+	for (i = 0; i < ((N / 4) * 4); i+=4) {
 		num12 = _mm_load_ps(&x[i]);
 		num13 = _mm_load_ps(&z[i]);
 		num14 = _mm_add_ps(num12, num13);//(x[i]+z[i])
@@ -185,15 +198,15 @@ void slow_routine(float alpha, float beta) {
 		num20 = _mm_load_ps1(&w[i+1]);
 		num23 = _mm_load_ps1(&w[i+2]);
 		num26 = _mm_load_ps1(&w[i+3]);
-		for (j = 0; j < N; j += 4) {
+		for (j = 0; j < ((N / 4) * 4); j += 4) {
 			num17 = _mm_load_ps(&x[j]);
+
 			//calc num15
 			num16 = _mm_load_ps(&A[i][j]);
 
 			num18 = _mm_mul_ps(num16, num17);//(A[i][j] * x[j])
 
 			num15 = _mm_fmadd_ps(temp2, num18, num15);//(0.23*(A[i][j] * x[j]))+w[i]
-			//w[i] = w[i] + (0.23f * A[i][j] * x[j]);//wrote alph as literal
 			//calc num20
 			num21 = _mm_load_ps(&A[i+1][j]);
 
@@ -212,8 +225,11 @@ void slow_routine(float alpha, float beta) {
 			num28 = _mm_mul_ps(num27, num17);//(A[i][j] * x[j])
 
 			num26 = _mm_fmadd_ps(temp2, num28, num26);//(0.23*(A[i][j] * x[j]))+w[i]
-
+			//if (i == (((N / 4) * 4) - 1)) {
+			//	printf("aaa %d\n", j);
+			//}
 		}
+		//if (j < ((N / 4) * 4)) {
 		num19 = _mm_hadd_ps(num15, num15);
 		num19 = _mm_hadd_ps(num19, num19);
 
@@ -227,11 +243,27 @@ void slow_routine(float alpha, float beta) {
 		num31 = _mm_hadd_ps(num31, num31);
 
 		_mm_store_ss((float*)&w[i], num19);
-		_mm_store_ss((float*)&w[i+1], num29);
-		_mm_store_ss((float*)&w[i+2], num30);
-		_mm_store_ss((float*)&w[i+3], num31);
+		_mm_store_ss((float*)&w[i + 1], num29);
+		_mm_store_ss((float*)&w[i + 2], num30);
+		_mm_store_ss((float*)&w[i + 3], num31);
+
+		for (; j < N; j++) {
+			w[i] = w[i] + alpha * A[i][j] * x[j];
+			w[i+1] = w[i+1] + alpha * A[i+1][j] * x[j];
+			w[i+2] = w[i+2] + alpha * A[i+2][j] * x[j];
+			w[i+3] = w[i+3] + alpha * A[i+3][j] * x[j];
+		}
 	}
 
+	for (i = ((N / 4) * 4); i < N; i++) {
+		x[i] = x[i] + z[i];
+		//printf("iii %d\n",i);
+		for (j = 0; j < N; j++) {
+			//printf("jjj %d\n", j);
+
+			w[i] = w[i] + alpha * A[i][j] * x[j];
+		}
+	}
 }
 
 void original_routine(float alpha, float beta) {
