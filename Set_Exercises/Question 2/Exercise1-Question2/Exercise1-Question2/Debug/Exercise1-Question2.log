@@ -1,4 +1,4 @@
 ﻿  gemver_default.cpp
-C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(173,47): warning C4101: 'temp2': unreferenced local variable
-C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(157,8): warning C4101: 'tempV3': unreferenced local variable
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(181,47): warning C4101: 'temp2': unreferenced local variable
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(165,8): warning C4101: 'tempV3': unreferenced local variable
   Exercise1-Question2.vcxproj -> C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Debug\Exercise1-Question2.exe

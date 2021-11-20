@@ -19,6 +19,7 @@
 void initialize();
 void initialize_again();
 void slow_routine(float alpha, float beta);//you will optimize this routine
+void original_routine(float alpha, float beta);
 unsigned short int Compare(float alpha, float beta);
 unsigned short int equal(float const a, float const b);
 
@@ -27,6 +28,10 @@ __declspec(align(64)) float A[N][N], u1[N], u2[N], v1[N], v2[N], x[N], y[N], w[N
 
 #define TIMES_TO_RUN 1 //how many times the function will run
 #define EPSILON 0.0001
+
+#define BILLION 1000000000
+#define ARITHMETICAL_OPS ((N*N*4)+(N*N*3)+(N*N*3)+(N)) 
+
 
 
 // Optimisations applied
@@ -38,6 +43,7 @@ __declspec(align(64)) float A[N][N], u1[N], u2[N], v1[N], v2[N], x[N], y[N], w[N
 int main() {
 
 	float alpha = 0.23f, beta = 0.45f;
+	double my_flops;
 
 	//define the timers measuring execution time
 	clock_t start_1, end_1; //ignore this for  now
@@ -46,16 +52,22 @@ int main() {
 
 	start_1 = clock(); //start the timer 
 
-	for (int i = 0; i < TIMES_TO_RUN; i++)//this loop is needed to get an accurate ex.time value
-		slow_routine(alpha, beta);
-
+	for (int i = 0; i < TIMES_TO_RUN; i++) {//this loop is needed to get an accurate ex.time value
+		slow_routine(alpha, beta);//improved routine
+		//original_routine(alpha, beta);
+	}
 
 	end_1 = clock(); //end the timer 
 
 	printf(" clock() method: %ldms\n", (end_1 - start_1) / (CLOCKS_PER_SEC / 1000));//print the ex.time
 
-	if (Compare(alpha, beta) == 0)
+	if (Compare(alpha, beta) == 0){
 		printf("\nCorrect Result\n");
+		//my_flops = (double)(TIMES_TO_RUN * (double)((ARITHMETICAL_OPS) / ((end_1) / CLOCKS_PER_SEC)));
+		//printf("%f", (double)ARITHMETICAL_OPS);
+		//printf("\n%f GigaFLOPS achieved\n", my_flops / BILLION);
+		//printf("%d\n", my_flops);
+	}
 	else
 		printf("\nINcorrect Result\n");
 
@@ -154,22 +166,6 @@ void slow_routine(float alpha, float beta) {
 		}
 	}
 
-	float tempV3;
-
-	//for (j = 0; j < N; j++)
-	//	for (i = 0; i < N; i++)
-	//		x[i] = x[i] + beta * A[j][i] * y[j];
-
-	//for (j = 0; j < N; j++) {
-	//	tempV3 = y[j];
-	//	for (i = 0; i < N; i+=4) {
-	//		x[i] = x[i] + 0.45f * A[j][i] * tempV3;
-	//		x[i+1] = x[i+1] + 0.45f * A[j][i+1] * tempV3;
-	//		x[i+2] = x[i+2] + 0.45f * A[j][i+2] * tempV3;
-	//		x[i+3] = x[i+3] + 0.45f * A[j][i+3] * tempV3;
-	//	}
-	//}
-
 	__m128 num7, num8, num9, num10, num11, temp, temp2;
 	temp = _mm_set_ps(0.45f, 0.45f, 0.45f, 0.45f);
 	for (j = 0; j < N; j++) {
@@ -245,6 +241,31 @@ void slow_routine(float alpha, float beta) {
 
 		_mm_store_ss((float*)&w[i], num19);
 	}
+
+}
+
+void original_routine(float alpha, float beta) {
+
+	unsigned int i, j;
+
+	for (i = 0; i < N; i++)
+		for (j = 0; j < N; j++)
+			A[i][j] = A[i][j] + u1[i] * v1[j] + u2[i] * v2[j];
+
+
+	for (i = 0; i < N; i++)
+		for (j = 0; j < N; j++)
+			x[i] = x[i] + beta * A[j][i] * y[j];
+
+	for (i = 0; i < N; i++)
+		x[i] = x[i] + z[i];
+
+
+	for (i = 0; i < N; i++)
+		for (j = 0; j < N; j++)
+			w[i] = w[i] + alpha * A[i][j] * x[j];
+
+
 }
 
 
