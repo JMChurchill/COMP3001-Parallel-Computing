@@ -53,20 +53,20 @@ int main() {
 	start_1 = clock(); //start the timer 
 
 	for (int i = 0; i < TIMES_TO_RUN; i++) {//this loop is needed to get an accurate ex.time value
-		slow_routine(alpha, beta);//improved routine
-		//original_routine(alpha, beta);
+		slow_routine(alpha, beta);//improved routine -> GigaFLOPS 4.362 -> N = 8192, TIMES_TO_RUN = 130 -> took 20.1 seconds
+		//original_routine(alpha, beta);//-> GigaFLOPS 1.167 -> N = 8192, TIMES_TO_RUN = 40 -> took 23.2 seconds
 	}
 
 	end_1 = clock(); //end the timer 
 
 	printf(" clock() method: %ldms\n", (end_1 - start_1) / (CLOCKS_PER_SEC / 1000));//print the ex.time
+	//my_flops = (double)(TIMES_TO_RUN * (double)((ARITHMETICAL_OPS) / ((end_1) / CLOCKS_PER_SEC)));
+	//printf("%f", (double)ARITHMETICAL_OPS);
+	//printf("\n%f GigaFLOPS achieved\n", my_flops / BILLION);
+	//printf("%d\n", my_flops);
 
 	if (Compare(alpha, beta) == 0){
 		printf("\nCorrect Result\n");
-		//my_flops = (double)(TIMES_TO_RUN * (double)((ARITHMETICAL_OPS) / ((end_1) / CLOCKS_PER_SEC)));
-		//printf("%f", (double)ARITHMETICAL_OPS);
-		//printf("\n%f GigaFLOPS achieved\n", my_flops / BILLION);
-		//printf("%d\n", my_flops);
 	}
 	else
 		printf("\nINcorrect Result\n");
@@ -138,6 +138,8 @@ void slow_routine(float alpha, float beta) {
 	_mm_set1_ps,	// -> Broadcast single-precision (32-bit) floating-point value a to all elements of dst.
 	_mm_hadd_ps.	// -> 
 	*/
+
+
 	//int ii, jj;
 	//int T = 1;
 	//for (ii = 0; ii < N; ii +=T) {
@@ -147,13 +149,14 @@ void slow_routine(float alpha, float beta) {
 	//}
 
 	unsigned int i, j;
+	int upperBound = (N / 4) * 4;
 
 	__m128 num0, num1, num2, num3, num4;
 	for (i = 0; i < N; i++) {
 		num1 = _mm_load_ps1(&u1[i]);
 		num3 = _mm_load_ps1(&u2[i]);
 
-		for (j = 0; j < ((N / 4) * 4); j+=4) {
+		for (j = 0; j < upperBound; j+=4) {
 			num4 = _mm_load_ps(&v2[j]);
 			num0 = _mm_load_ps(&A[i][j]);
 			num2 = _mm_load_ps(&v1[j]);
@@ -172,7 +175,7 @@ void slow_routine(float alpha, float beta) {
 	temp = _mm_set_ps(0.45f, 0.45f, 0.45f, 0.45f);
 	for (j = 0; j < N; j++) {
 		num7 = _mm_load_ps1(&y[j]);
-		for (i = 0; i < ((N / 4) * 4); i += 4) {
+		for (i = 0; i < upperBound; i += 4) {
 			num8 = _mm_load_ps(&A[j][i]);
 			num9 = _mm_load_ps(&x[i]);
 
@@ -189,7 +192,7 @@ void slow_routine(float alpha, float beta) {
 
 	__m128 num12, num13, num14, num15, num16, num17, num18, num19, num20, num21, num22,num23,num24,num25,num26,num27,num28,num29,num30,num31, temp2;
 	temp2 = _mm_set_ps(0.23f, 0.23f, 0.23f, 0.23f);
-	for (i = 0; i < ((N / 4) * 4); i+=4) {
+	for (i = 0; i < upperBound; i+=4) {
 		num12 = _mm_load_ps(&x[i]);
 		num13 = _mm_load_ps(&z[i]);
 		num14 = _mm_add_ps(num12, num13);//(x[i]+z[i])
@@ -198,7 +201,7 @@ void slow_routine(float alpha, float beta) {
 		num20 = _mm_load_ps1(&w[i+1]);
 		num23 = _mm_load_ps1(&w[i+2]);
 		num26 = _mm_load_ps1(&w[i+3]);
-		for (j = 0; j < ((N / 4) * 4); j += 4) {
+		for (j = 0; j < upperBound; j += 4) {
 			num17 = _mm_load_ps(&x[j]);
 
 			//calc num15
@@ -255,7 +258,7 @@ void slow_routine(float alpha, float beta) {
 		}
 	}
 
-	for (i = ((N / 4) * 4); i < N; i++) {
+	for (i = upperBound; i < N; i++) {
 		x[i] = x[i] + z[i];
 		//printf("iii %d\n",i);
 		for (j = 0; j < N; j++) {
