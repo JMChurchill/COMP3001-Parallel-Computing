@@ -1,7 +1,10 @@
 ﻿  gemver_default.cpp
 C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(47,9): warning C4101: 'my_flops': unreferenced local variable
-C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(133,10): warning C4101: 'jj': unreferenced local variable
-C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(133,6): warning C4101: 'ii': unreferenced local variable
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(143,19): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(149,20): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(169,14): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(195,20): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(202,14): warning C4018: '<': signed/unsigned mismatch
   Generating code
   5 of 11 functions (45.5%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
