@@ -23,7 +23,7 @@ void original_routine(float alpha, float beta);
 unsigned short int Compare(float alpha, float beta);
 unsigned short int equal(float const a, float const b);
 
-#define N 8193//8193 //input size
+#define N 8192//8193 //input size
 __declspec(align(64)) float A[N][N], u1[N], u2[N], v1[N], v2[N], x[N], y[N], w[N], z[N], test[N];
 
 #define TIMES_TO_RUN 1 //how many times the function will run
@@ -135,10 +135,13 @@ void slow_routine(float alpha, float beta) {
 	//for (ii = 0; ii < N; ii += T) {
 	//	for (jj = 0; jj < N; jj += T) {
 			__m128 num0, num1, num2, num3, num4;
+			__m128 num7, num8, num9, num10, num11, temp;
+			temp = _mm_set_ps(0.45f, 0.45f, 0.45f, 0.45f);
 			for (i = 0; i < N; i++) {
 			//for (i = ii; i < ii + T; i++) {
 				num1 = _mm_load_ps1(&u1[i]);
 				num3 = _mm_load_ps1(&u2[i]);
+				num7 = _mm_load_ps1(&y[i]);
 
 				for (j = 0; j < (((N) / 4) * 4); j += 4) {
 				//for (j = jj; j < (((jj + T) / 4) * 4); j += 4) {
@@ -150,40 +153,50 @@ void slow_routine(float alpha, float beta) {
 					num0 = _mm_fmadd_ps(num3, num4, num0);//u2[i]*v2[j]+(u1[i]*v1[j]+A[i][j])
 					_mm_store_ps(&A[i][j], num0);
 					//A[i][j] = A[i][j] + (u1[i] * v1[j]) + (u2[i] * v2[j]);
+
+					num8 = _mm_load_ps(&A[i][j]);
+					num9 = _mm_load_ps(&x[j]);
+
+					num10 = _mm_mul_ps(num8, num7);//(A[j][i]*y[j])
+
+					num11 = _mm_fmadd_ps(num10, temp, num9); //(A[j][i] * y[j])*(0.45) + x[i]
+
+					_mm_store_ps((float*)&x[j], num11);
 				}
 				for (; j < N; j++)
 				//for (; j < jj + T; j++)
 				{
 					A[i][j] = A[i][j] + u1[i] * v1[j] + u2[i] * v2[j];
 					//printf("not 4"); 
+					x[j] = x[j] + 0.45f * A[i][j] * y[i];
 				}
 			}
 
-			__m128 num7, num8, num9, num10, num11, temp;
-			temp = _mm_set_ps(0.45f, 0.45f, 0.45f, 0.45f);
-			for (j = 0; j < N; j++) {
-			//for (j = jj; j < jj + T; j++) {
-				num7 = _mm_load_ps1(&y[j]);
-				for (i = 0; i < (((N) / 4) * 4); i += 4) {
-				//for (i = ii; i < (((ii + T) / 4) * 4); i += 4) {
-					num8 = _mm_load_ps(&A[j][i]);
-					num9 = _mm_load_ps(&x[i]);
+			//__m128 num7, num8, num9, num10, num11, temp;
+			//temp = _mm_set_ps(0.45f, 0.45f, 0.45f, 0.45f);
+			//for (j = 0; j < N; j++) {
+			////for (j = jj; j < jj + T; j++) {
+			//	num7 = _mm_load_ps1(&y[j]);
+			//	for (i = 0; i < (((N) / 4) * 4); i += 4) {
+			//	//for (i = ii; i < (((ii + T) / 4) * 4); i += 4) {
+			//		num8 = _mm_load_ps(&A[j][i]);
+			//		num9 = _mm_load_ps(&x[i]);
 
-					num10 = _mm_mul_ps(num8, num7);//(A[j][i]*y[j])
+			//		num10 = _mm_mul_ps(num8, num7);//(A[j][i]*y[j])
 
-					num11 = _mm_fmadd_ps(num10, temp, num9); //(A[j][i] * y[j])*(0.45) + x[i]
+			//		num11 = _mm_fmadd_ps(num10, temp, num9); //(A[j][i] * y[j])*(0.45) + x[i]
 
-					_mm_store_ps((float*)&x[i], num11);
-				}
-				for (; i < N; i++) {
-				//for (; i < ii + T; i++) {//continue loop with remaining iterations
-					x[i] = x[i] + 0.45f * A[j][i] * y[j];
-					//if (i == N - 1)
-					//{
-					//printf("inner i = %d\n", i);
-					//}
-				}
-			}
+			//		_mm_store_ps((float*)&x[i], num11);
+			//	}
+			//	for (; i < N; i++) {
+			//	//for (; i < ii + T; i++) {//continue loop with remaining iterations
+			//		x[i] = x[i] + 0.45f * A[j][i] * y[j];
+			//		//if (i == N - 1)
+			//		//{
+			//		//printf("inner i = %d\n", i);
+			//		//}
+			//	}
+			//}
 
 			__m128 num12, num13, num14;
 			for (i = 0; i < (((N) / 4) * 4); i += 4) {
@@ -567,8 +580,11 @@ void original_routine(float alpha, float beta) {
 	unsigned int i, j;
 
 	for (i = 0; i < N; i++)
-		for (j = 0; j < N; j++)
+		for (j = 0; j < N; j++) {
 			A[i][j] = A[i][j] + u1[i] * v1[j] + u2[i] * v2[j];
+			//x[j] = x[j] + beta * A[i][j] * y[i];
+		}
+
 
 
 	for (i = 0; i < N; i++)
