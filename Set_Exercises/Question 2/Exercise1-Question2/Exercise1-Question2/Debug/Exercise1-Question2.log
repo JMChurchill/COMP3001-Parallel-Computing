@@ -1,4 +1,14 @@
 ﻿  gemver_default.cpp
-C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(181,47): warning C4101: 'temp2': unreferenced local variable
-C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(165,8): warning C4101: 'tempV3': unreferenced local variable
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(47,9): warning C4101: 'my_flops': unreferenced local variable
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(139,19): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(144,20): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(155,14): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(165,19): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(168,20): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(179,14): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(190,19): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(197,13): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(203,19): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(206,20): warning C4018: '<': signed/unsigned mismatch
+C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Exercise1-Question2\gemver_default.cpp(220,14): warning C4018: '<': signed/unsigned mismatch
   Exercise1-Question2.vcxproj -> C:\Git\COMP3001-coursework\Set_Exercises\Question 2\Exercise1-Question2\Debug\Exercise1-Question2.exe
