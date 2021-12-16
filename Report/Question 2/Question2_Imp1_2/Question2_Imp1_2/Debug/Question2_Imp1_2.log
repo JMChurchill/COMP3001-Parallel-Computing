@@ -1,0 +1,5 @@
+﻿  Question2_Imp1_2.cpp
+C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Question2_Imp1_2\Question2_Imp1_2.cpp(139,21): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Question2_Imp1_2\Question2_Imp1_2.cpp(139,33): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Question2_Imp1_2\Question2_Imp1_2.cpp(139,43): warning C4305: 'initializing': truncation from 'double' to 'float'
+  Question2_Imp1_2.vcxproj -> C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Debug\Question2_Imp1_2.exe
