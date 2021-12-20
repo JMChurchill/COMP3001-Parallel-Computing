@@ -1,0 +1,13 @@
+﻿  Question2_Imp1_2.cpp
+C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Question2_Imp1_2\Question2_Imp1_2.cpp(82,12): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type '__int64'
+C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Question2_Imp1_2\Question2_Imp1_2.cpp(82,12): message : consider using '%lld' in the format string
+C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Question2_Imp1_2\Question2_Imp1_2.cpp(82,12): message : consider using '%I64d' in the format string
+C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Question2_Imp1_2\Question2_Imp1_2.cpp(155,21): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Question2_Imp1_2\Question2_Imp1_2.cpp(155,33): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Question2_Imp1_2\Question2_Imp1_2.cpp(155,43): warning C4305: 'initializing': truncation from 'double' to 'float'
+  Generating code
+  3 of 6 functions (50.0%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Question2_Imp1_2.vcxproj -> C:\Git\COMP3001-coursework\Report\Question 2\Question2_Imp1_2\Release\Question2_Imp1_2.exe

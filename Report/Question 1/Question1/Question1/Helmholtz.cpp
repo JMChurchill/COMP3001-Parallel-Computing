@@ -3,12 +3,27 @@
 //parallelize this program using OpenMP (multithreading + vectorization)
 
 //In Linux, compile with gcc coursework.c -o p -O2 -fopenmp -lm -fopt-info-vec-optimized
-
+//optimise from line 48 onwards (helmholtz function onwards)
+//no avx, no register blocking, no loop-merge, just OpenMP
+//using OpenMP you can both paralise and vectorise the code -> to get full marks must use both OMP parallel and OMP SIMD
+//
 # include <stdlib.h>
 # include <stdio.h>
 # include <math.h>
 # include <omp.h>
 
+
+//#include <Windows.h>
+//#include <math.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <omp.h>
+//#include <stdbool.h> 
+//#include <stdio.h>
+//#include <time.h>
+#include <iostream>
+//#include <immintrin.h>
+//#include <chrono>
 
 void helmholtz(int m, int n, int it_max, double alpha, double omega, double tol);
 void error_check(int m, int n, double alpha, double u[], double f[]);
@@ -55,9 +70,10 @@ void helmholtz(int m, int n, int it_max, double alpha, double omega, double tol)
     */
     f = rhs_set(m, n, alpha);
 
-    u = (double*)malloc(m * n * sizeof(double));
+    //u = (double*)malloc(m * n * sizeof(double));
+    u = (double*)_mm_malloc(m * n * sizeof(double), 64);
 
-
+#pragma omp parallel for private(i,j) shared(u)
     for (j = 0; j < n; j++)
     {
         for (i = 0; i < m; i++)
@@ -68,14 +84,17 @@ void helmholtz(int m, int n, int it_max, double alpha, double omega, double tol)
     /*
       Solve the Helmholtz equation.
     */
-    jacobi(m, n, alpha, omega, u, f, tol, it_max);
+    jacobi(m, n, alpha, omega, u, f, tol, it_max);//not done
     /*
       Determine the error.
     */
     error_check(m, n, alpha, u, f);
 
-    free(f);
-    free(u);
+    //free(f);
+    //free(u);
+
+    _mm_free(u);
+    _mm_free(f);
 
     return;
 }
@@ -93,12 +112,12 @@ void error_check(int m, int n, double alpha, double u[], double f[]) {
 
     u_norm = 0.0;
 
-
+#pragma parallel for reduction(+:u_norm) private(i,j)
     for (j = 0; j < n; j++)
     {
         for (i = 0; i < m; i++)
         {
-            u_norm = u_norm + u[i + j * m] * u[i + j * m];
+            u_norm += u[i + j * m] * u[i + j * m];
         }
     }
 
@@ -107,7 +126,7 @@ void error_check(int m, int n, double alpha, double u[], double f[]) {
     u_true_norm = 0.0;
     error_norm = 0.0;
 
-
+#pragma parallel for reduction(+:error_norm,u_true_norm) private(i,j)
     for (j = 0; j < n; j++)
     {
         for (i = 0; i < m; i++)
@@ -115,8 +134,8 @@ void error_check(int m, int n, double alpha, double u[], double f[]) {
             x = (double)(2 * i - m + 1) / (double)(m - 1);
             y = (double)(2 * j - n + 1) / (double)(n - 1);
             u_true = u_exact(x, y);
-            error_norm = error_norm + (u[i + j * m] - u_true) * (u[i + j * m] - u_true);
-            u_true_norm = u_true_norm + u_true * u_true;
+            error_norm += (u[i + j * m] - u_true) * (u[i + j * m] - u_true);
+            u_true_norm += u_true * u_true;
         }
     }
 
@@ -156,8 +175,10 @@ void jacobi(int m, int n, double alpha, double omega, double u[], double f[],
     ay = -1.0 / dy / dy;
     b = +2.0 / dx / dx + 2.0 / dy / dy + alpha;
 
-    u_old = (double*)malloc(m * n * sizeof(double));
+    //u_old = (double*)malloc(m * n * sizeof(double));
+    u_old = (double*)_mm_malloc(m * n* sizeof(double), 64);
 
+//#pragma omp parallel for private(j,i) firstprivate(it)
     for (it = 1; it <= it_max; it++)
     {
         error_norm = 0.0;
@@ -174,7 +195,7 @@ void jacobi(int m, int n, double alpha, double omega, double u[], double f[],
         }
 
 
-        for (j = 0; j < n; j++)
+        for (j = 0; j < n; j++)//cannot be vectorised using openMP - do NOT have to take actions against this problem
         {
             for (i = 0; i < m; i++)
             {
@@ -218,33 +239,34 @@ void jacobi(int m, int n, double alpha, double omega, double u[], double f[],
     printf("\n");
     printf("  Total number of iterations %d\n", it);
 
-    free(u_old);
+    //free(u_old);
+    _mm_free(u_old);
 
     return;
 }
 /******************************************************************************/
 
 double* rhs_set(int m, int n, double alpha) {
-    double* f;
+    double *f;
     double f_norm;
     int i;
     int j;
     double x;
     double y;
 
-    f = (double*)malloc(m * n * sizeof(double));
+    //f = (double*)malloc(m * n * sizeof(double)); //replace all malloc with mm_malloc and free with mm free
+    f = (double*)_mm_malloc(m * n * sizeof(double), 64);
 
-
-
+#pragma omp parallel for private(j,i)
     for (j = 0; j < n; j++)
     {
-        for (i = 0; i < m; i++)
+        for (i = 0; i < m; i++)// i wont be private by defualt 
         {
             f[i + j * m] = 0.0;
         }
     }
 
-
+#pragma omp parallel for private(i)
     for (i = 0; i < m; i++)
     {
         j = 0;
@@ -253,7 +275,7 @@ double* rhs_set(int m, int n, double alpha) {
         f[i + j * m] = u_exact(x, y);
     }
 
-
+#pragma omp parallel for private(i)
     for (i = 0; i < m; i++)
     {
         j = n - 1;
@@ -262,7 +284,7 @@ double* rhs_set(int m, int n, double alpha) {
         f[i + j * m] = u_exact(x, y);
     }
 
-
+#pragma omp parallel for private(j)
     for (j = 0; j < n; j++)
     {
         i = 0;
@@ -272,7 +294,7 @@ double* rhs_set(int m, int n, double alpha) {
     }
 
 
-
+#pragma omp parallel for private(j)
     for (j = 0; j < n; j++)
     {
         i = m - 1;
@@ -282,7 +304,7 @@ double* rhs_set(int m, int n, double alpha) {
     }
 
 
-
+#pragma omp parallel for private(j,i)
     for (j = 1; j < n - 1; j++)
     {
         for (i = 1; i < m - 1; i++)
@@ -297,7 +319,7 @@ double* rhs_set(int m, int n, double alpha) {
     f_norm = 0.0;
 
 
-
+#pragma omp parallel for private(j,i) reduction(+:f_norm)
     for (j = 0; j < n; j++)
     {
         for (i = 0; i < m; i++)
@@ -309,6 +331,8 @@ double* rhs_set(int m, int n, double alpha) {
 
     printf("\n");
     printf("  Right hand side l2 norm = %f\n", f_norm);
+
+    //_mm_free(f);
 
     return f;
 }

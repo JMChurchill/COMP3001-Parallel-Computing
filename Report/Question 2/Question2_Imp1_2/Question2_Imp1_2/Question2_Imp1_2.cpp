@@ -21,11 +21,18 @@ run using
 #include <omp.h>
 
 #define BILLION 1000000000
-#define TIMES 10000
+#define TIMES 50000
 
-#define N 64
+#define N 128
 
-#define ARITHMETICAL_OPS (5*N)*N*N
+//#define ARITHMETICAL_OPS 5*N*N*N
+//#define ARITHMETICAL_OPS 344100945960//4098
+//#define ARITHMETICAL_OPS 42949672960//2048
+//#define ARITHMETICAL_OPS 5368709120//1024
+//#define ARITHMETICAL_OPS 671088640//512
+//#define ARITHMETICAL_OPS 83886080//256
+#define ARITHMETICAL_OPS 10485760//128
+//#define ARITHMETICAL_OPS 1310720//64
 
 
 
@@ -78,7 +85,7 @@ int main()
     //printf("\n The first and last values are %f %f\n", Y[0], Y[N - 1]);
 
 
-    my_flops = (double)(TIMES * (double)((ARITHMETICAL_OPS) / ((end_1) / CLOCKS_PER_SEC)));
+    my_flops = (double)(TIMES * (double)((ARITHMETICAL_OPS) / ((end_1) / CLOCKS_PER_SEC))); 
     printf("\n%f GigaFLOPS achieved\n", my_flops / BILLION);
 
     return 0;

@@ -16,8 +16,16 @@
 
 #define TIMES_TO_RUN 1 //how many times the function will run
 
-#define N 256 //input size - USE POWER OF 2 ONLY
+#define N 128 //input size - USE POWER OF 2 ONLY
 //#define CHECK_OUTPUT   //if do not want to validate the results comment this
+//#define ARITHMETICAL_OPS 5*N*N*N
+//#define ARITHMETICAL_OPS 344100945960//4098
+//#define ARITHMETICAL_OPS 42949672960//2048
+//#define ARITHMETICAL_OPS 5368709120//1024
+//#define ARITHMETICAL_OPS 671088640//512
+//#define ARITHMETICAL_OPS 83886080//256
+#define ARITHMETICAL_OPS 10485760//128
+//#define ARITHMETICAL_OPS 1310720//64
 
 
 __declspec(align(64)) float C[N * N], test[N * N], A[N * N], B[N * N]; //square matrixes are considered only, stored as 1d arrays
@@ -35,7 +43,6 @@ inline unsigned short int equal(float const a, float const b);
 
 
 __global__ void mmm_ver1(float* C, float* A, float* B) {
-
 	//#Implementation #3
 
 	//use dim3 dimBlock(16, 16, 1);
@@ -43,21 +50,12 @@ __global__ void mmm_ver1(float* C, float* A, float* B) {
 
 	float tmp = 0.0;
 
-
-
 	int i = blockIdx.x * blockDim.x + threadIdx.x; //i loop has been parallelized
-
 	int j = blockIdx.y * blockDim.y + threadIdx.y; //j loop has been parallelized
 
-
-
 	for (int k = 0; k < N; k++) {
-
 		tmp += A[N * i + k] * B[N * k + j];
-
 	}
-
-
 
 	C[N * i + j] = tmp;
 }
@@ -68,23 +66,15 @@ __global__ void mmm_ver1(float* C, float* A, float* B) {
 
 __global__ void mmm_tiled(float* C, float* A, float* B) {
 	__shared__ float aa[16][16];
-
 	__shared__ float bb[16][16];
 
 	float tmp = 0.0;
-
 	int k, m;
 
-
-
 	int row_A = 16 * blockIdx.y + threadIdx.y;
-
 	int col_B = blockIdx.x * 16 + threadIdx.x;
 
-
-
 	for (m = 0; m < N / 16; m++) {
-
 		aa[threadIdx.y][threadIdx.x] = A[N * (row_A)+(m * 16 + threadIdx.x)];
 		bb[threadIdx.y][threadIdx.x] = B[N * (m * 16 + threadIdx.y) + (col_B)];
 
@@ -95,11 +85,9 @@ __global__ void mmm_tiled(float* C, float* A, float* B) {
 		}
 
 		__syncthreads();
-
 	}
 
 	C[N * row_A + col_B] = tmp;
-
 }
 
 
@@ -181,7 +169,7 @@ int main()
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
 
-	double flops = (double)((double)2 * N * N * N) / (elapsed_time / TIMES_TO_RUN);
+	double flops = (double)((double)ARITHMETICAL_OPS) / (elapsed_time / TIMES_TO_RUN);
 	printf("\nGflops achieved %f ", flops / 1000000);
 
 	/*  Handling function of the CUDA runtime application programming interface.

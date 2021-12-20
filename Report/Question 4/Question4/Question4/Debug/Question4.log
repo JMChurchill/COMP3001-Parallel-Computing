@@ -1,0 +1,28 @@
+﻿  canny.cpp
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(12,9): warning C4101: 'j': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(12,6): warning C4101: 'i': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(18,16): warning C4101: 'temp': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(114,45): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(82,6): warning C4101: 'newPixel': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(74,9): warning C4101: 'j': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(74,6): warning C4101: 'i': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(84,16): warning C4101: 'temp': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(144,6): warning C4101: 'newAngle': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(142,6): warning C4101: 'Gy': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(139,6): warning C4101: 'rowOffset': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(145,6): warning C4101: 'newPixel': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(138,18): warning C4101: 'row': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(140,6): warning C4101: 'colOffset': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(141,6): warning C4101: 'Gx': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(138,23): warning C4101: 'col': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(147,16): warning C4101: 'temp': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(143,8): warning C4101: 'thisAngle': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(303,10): warning C4473: 'printf' : not enough arguments passed for format string
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(303,10): message : placeholders and their parameters expect 1 variadic arguments, but 0 were provided
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\canny.cpp(303,10): message : the missing variadic argument 1 is required by format string '%s'
+  Question4.cpp
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\Question4.cpp(7,6): warning C4101: 'out': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\Question4.cpp(7,14): warning C4101: 'j': unreferenced local variable
+C:\Git\COMP3001-coursework\Report\Question 4\Question4\Question4\Question4.cpp(7,11): warning C4101: 'i': unreferenced local variable
+  Generating Code...
+  Question4.vcxproj -> C:\Git\COMP3001-coursework\Report\Question 4\Question4\Debug\Question4.exe
