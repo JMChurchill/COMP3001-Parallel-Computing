@@ -69,7 +69,15 @@ void GaussianBlur() {
 
 
 void OptimisedSobel() {//optimise this!
-
+	//_mm_loadu_si128(__m128i const* mem_addr) - Load 128-bits of integer data from memory into dst.mem_addr (does not need to be aligned on any particular boundary.)
+	//_mm_maddubs_epi16(__m128i a, __m128i b) - vertically multiply each unsigned 8 bit integer from a with the corresponding signed 8-bit from b, producing 
+	//											intermediate signed 16-bit integers. Horizontially add adjacent pairs of intermediate signed 16-bit integers, 
+	//											and pack the saturated results in dst.
+	//_mm_add_epi16(__m128i a, __m128i b) - Add packed 16-bit integers in a and b, and store the results in dst.
+	//_mm_hadd_epi16(__m128i a, __m128i b) - Horizontally add adjacent pairs of 16-bit integers in a and b, and pack the signed 16-bit results in dst.
+	//_mm_extract_epi16(__m128i a, int imm8) - Extract a 16-bit integer from a, selected with imm8, and store the result in the lower element of dst.
+	//_mm_set_epi8(char e15, char e14, char e13, char e12, char e11, char e10, char e9, char e8, char e7, char e6, char e5, char e4, char e3, char e2, char e1,
+	//				char e0) - Set packed 8-bit integers in dst with the supplied values.
 
 	int i, j;
 	unsigned int    row, col;
