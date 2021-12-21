@@ -85,13 +85,13 @@ void OptimisedSobel() {//optimise this!
 
 
 	/* Declare Sobel masks */
-	GxMask[0][0] = -1; GxMask[0][1] = 0; GxMask[0][2] = 1;
-	GxMask[1][0] = -2; GxMask[1][1] = 0; GxMask[1][2] = 2;
-	GxMask[2][0] = -1; GxMask[2][1] = 0; GxMask[2][2] = 1;
+	//GxMask[0][0] = -1; GxMask[0][1] = 0; GxMask[0][2] = 1;
+	//GxMask[1][0] = -2; GxMask[1][1] = 0; GxMask[1][2] = 2;
+	//GxMask[2][0] = -1; GxMask[2][1] = 0; GxMask[2][2] = 1;
 
-	GyMask[0][0] = -1; GyMask[0][1] = -2; GyMask[0][2] = -1;
-	GyMask[1][0] = 0; GyMask[1][1] = 0; GyMask[1][2] = 0;
-	GyMask[2][0] = 1; GyMask[2][1] = 2; GyMask[2][2] = 1;
+	//GyMask[0][0] = -1; GyMask[0][1] = -2; GyMask[0][2] = -1;
+	//GyMask[1][0] = 0; GyMask[1][1] = 0; GyMask[1][2] = 0;
+	//GyMask[2][0] = 1; GyMask[2][1] = 2; GyMask[2][2] = 1;
 
 	/*---------------------------- Determine edge directions and gradient strengths -------------------------------------------*/
 	for (row = 1; row < N - 1; row++) {
@@ -101,13 +101,51 @@ void OptimisedSobel() {//optimise this!
 			Gy = 0;
 
 			/* Calculate the sum of the Sobel mask times the nine surrounding pixels in the x and y direction */
-			for (rowOffset = -1; rowOffset <= 1; rowOffset++) {
-				for (colOffset = -1; colOffset <= 1; colOffset++) {
+			//for (rowOffset = -1; rowOffset <= 1; rowOffset++) {
+				//for (colOffset = -1; colOffset <= 1; colOffset++) {
 
-					Gx += filt[row + rowOffset][col + colOffset] * GxMask[rowOffset + 1][colOffset + 1];
-					Gy += filt[row + rowOffset][col + colOffset] * GyMask[rowOffset + 1][colOffset + 1];
-				}
-			}
+				//	Gx += filt[row + rowOffset][col + colOffset] * GxMask[rowOffset + 1][colOffset + 1];
+				//	Gy += filt[row + rowOffset][col + colOffset] * GyMask[rowOffset + 1][colOffset + 1];
+				//}
+				
+				//rowOffset -1
+				//colOffset = -1
+				Gx += filt[row + -1][col + -1] * -1;
+				Gy += filt[row + -1][col + -1] * -1;
+				//colOffset = 0
+				Gx += filt[row + -1][col + 0] * 0;
+				Gy += filt[row + -1][col + 0] * -2;
+				//colOffset = 1
+				Gx += filt[row + -1][col + 1] * 1;
+				Gy += filt[row + -1][col + 1] * -1;
+
+
+
+				//rowOffset 0
+				//colOffset = -1
+				Gx += filt[row + 0][col + -1] * -2;
+				Gy += filt[row + 0][col + -1] * 0;
+				//colOffset = 0
+				Gx += filt[row + 0][col + 0] * 0;
+				Gy += filt[row + 0][col + 0] * 0;
+				//colOffset = 1
+				Gx += filt[row + 0][col + 1] * 2;
+				Gy += filt[row + 0][col + 1] * 0;
+
+
+
+				//rowOffset 1
+				//colOffset = -1
+				Gx += filt[row + 1][col + -1] * -1;
+				Gy += filt[row + 1][col + -1] * 1;
+				//colOffset = 0
+				Gx += filt[row + 1][col + 0] * 0;
+				Gy += filt[row + 1][col + 0] * 2;
+				//colOffset = 1
+				Gx += filt[row + 1][col + 1] * 1;
+				Gy += filt[row + 1][col + 1] * 1;
+
+			//}
 
 			gradient[row][col] = (unsigned char)(sqrt(Gx * Gx + Gy * Gy));
 
@@ -244,7 +282,9 @@ int image_detection() {
 
 	write_image(OUT_NAME1, print);
 
-	Sobel();
+	//Sobel();
+
+	OptimisedSobel();
 
 
 
