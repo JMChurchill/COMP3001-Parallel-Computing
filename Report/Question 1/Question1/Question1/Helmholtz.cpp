@@ -73,7 +73,7 @@ void helmholtz(int m, int n, int it_max, double alpha, double omega, double tol)
     //u = (double*)malloc(m * n * sizeof(double));
     u = (double*)_mm_malloc(m * n * sizeof(double), 64);
 
-#pragma omp parallel for private(i,j) shared(u)
+#pragma omp parallel for private(i,j) shared(u) schedule(static)
     for (j = 0; j < n; j++)
     {
         for (i = 0; i < m; i++)
@@ -112,7 +112,7 @@ void error_check(int m, int n, double alpha, double u[], double f[]) {
 
     u_norm = 0.0;
 
-#pragma parallel for reduction(+:u_norm) private(i,j)
+#pragma parallel for reduction(+:u_norm) private(i,j) shared(u) schedule(static)
     for (j = 0; j < n; j++)
     {
         for (i = 0; i < m; i++)
@@ -126,7 +126,7 @@ void error_check(int m, int n, double alpha, double u[], double f[]) {
     u_true_norm = 0.0;
     error_norm = 0.0;
 
-#pragma parallel for reduction(+:error_norm,u_true_norm) private(i,j)
+#pragma parallel for reduction(+:error_norm,u_true_norm) private(i,j) firstprivate(u_true,x,y) shared(u)
     for (j = 0; j < n; j++)
     {
         for (i = 0; i < m; i++)
@@ -185,7 +185,7 @@ void jacobi(int m, int n, double alpha, double omega, double u[], double f[],
         /*
           Copy new solution into old.
         */
-
+ #pragma omp parallel for private(j,i) shared(u_old,u) schedule(static)
         for (j = 0; j < n; j++)
         {
             for (i = 0; i < m; i++)
@@ -257,7 +257,7 @@ double* rhs_set(int m, int n, double alpha) {
     //f = (double*)malloc(m * n * sizeof(double)); //replace all malloc with mm_malloc and free with mm free
     f = (double*)_mm_malloc(m * n * sizeof(double), 64);
 
-#pragma omp parallel for private(j,i)
+#pragma omp parallel for private(j,i) shared(f) schedule(static)
     for (j = 0; j < n; j++)
     {
         for (i = 0; i < m; i++)// i wont be private by defualt 
@@ -266,7 +266,7 @@ double* rhs_set(int m, int n, double alpha) {
         }
     }
 
-#pragma omp parallel for private(i)
+#pragma omp parallel for private(i) firstprivate(j,y,x) shared(f) schedule(static)
     for (i = 0; i < m; i++)
     {
         j = 0;
@@ -275,7 +275,7 @@ double* rhs_set(int m, int n, double alpha) {
         f[i + j * m] = u_exact(x, y);
     }
 
-#pragma omp parallel for private(i)
+#pragma omp parallel for private(i) firstprivate(j,y,x) shared(f) schedule(static)
     for (i = 0; i < m; i++)
     {
         j = n - 1;
@@ -284,7 +284,7 @@ double* rhs_set(int m, int n, double alpha) {
         f[i + j * m] = u_exact(x, y);
     }
 
-#pragma omp parallel for private(j)
+#pragma omp parallel for private(j) firstprivate(i,y,x) shared(f) schedule(static)
     for (j = 0; j < n; j++)
     {
         i = 0;
@@ -294,7 +294,8 @@ double* rhs_set(int m, int n, double alpha) {
     }
 
 
-#pragma omp parallel for private(j)
+//#pragma omp parallel for private(j)
+#pragma omp parallel for private(j) firstprivate(i,y,x) shared(f) schedule(static)
     for (j = 0; j < n; j++)
     {
         i = m - 1;
@@ -304,7 +305,8 @@ double* rhs_set(int m, int n, double alpha) {
     }
 
 
-#pragma omp parallel for private(j,i)
+//#pragma omp parallel for private(j,i)
+#pragma omp parallel for private(j,i) firstprivate(y,x) shared(f) schedule(static)
     for (j = 1; j < n - 1; j++)
     {
         for (i = 1; i < m - 1; i++)
@@ -319,12 +321,12 @@ double* rhs_set(int m, int n, double alpha) {
     f_norm = 0.0;
 
 
-#pragma omp parallel for private(j,i) reduction(+:f_norm)
+#pragma omp parallel for private(j,i) reduction(+:f_norm) shared(f) schedule(static)
     for (j = 0; j < n; j++)
     {
         for (i = 0; i < m; i++)
         {
-            f_norm = f_norm + f[i + j * m] * f[i + j * m];
+            f_norm += f[i + j * m] * f[i + j * m];
         }
     }
     f_norm = sqrt(f_norm);
