@@ -1,2 +1,6 @@
 ﻿  Helmholtz.cpp
-  Question1.vcxproj -> C:\Git\COMP3001-coursework\Report\Question 1\Question1\Debug\Question1.exe
+C:\Git\COMP3001-coursework\Report\Question 1\Question1\Question1\Helmholtz.cpp(122,9): error C7660: 'simd': requires '-openmp:experimental' command line option(s)
+C:\Git\COMP3001-coursework\Report\Question 1\Question1\Question1\Helmholtz.cpp(138,9): error C7660: 'simd': requires '-openmp:experimental' command line option(s)
+C:\Git\COMP3001-coursework\Report\Question 1\Question1\Question1\Helmholtz.cpp(199,9): error C7660: 'simd': requires '-openmp:experimental' command line option(s)
+C:\Git\COMP3001-coursework\Report\Question 1\Question1\Question1\Helmholtz.cpp(273,9): error C7660: 'simd': requires '-openmp:experimental' command line option(s)
+C:\Git\COMP3001-coursework\Report\Question 1\Question1\Question1\Helmholtz.cpp(323,9): error C7660: 'simd': requires '-openmp:experimental' command line option(s)

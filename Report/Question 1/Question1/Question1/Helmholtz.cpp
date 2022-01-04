@@ -320,6 +320,7 @@ double* rhs_set(int m, int n, double alpha) {
 #pragma omp parallel for private(j,i) firstprivate(y,x) shared(f) schedule(static)
     for (j = 1; j < n - 1; j++)
     {
+#pragma omp simd aligned(f:64)
         for (i = 1; i < m - 1; i++)
         {
             x = (double)(2 * i - m + 1) / (double)(m - 1);
@@ -332,9 +333,11 @@ double* rhs_set(int m, int n, double alpha) {
     f_norm = 0.0;
 
 
-#pragma omp parallel for private(j,i) reduction(+:f_norm) shared(f) schedule(static)
+//#pragma omp parallel for private(j,i) reduction(+:f_norm) shared(f) schedule(static)
+#pragma omp parallel for private(j,i) shared(f) schedule(static)
     for (j = 0; j < n; j++)
     {
+#pragma omp simd aligned(f:64) reduction(+:f_norm)
         for (i = 0; i < m; i++)
         {
             f_norm += f[i + j * m] * f[i + j * m];
