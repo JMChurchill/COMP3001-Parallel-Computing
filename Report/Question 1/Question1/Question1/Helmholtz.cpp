@@ -1,6 +1,9 @@
 
 //-------------------- COMP3001 OPENMP COURSEWORK - W1 Part1 -----------------------------
 //parallelize this program using OpenMP (multithreading + vectorization)
+//to run:
+// cd .\Question1\
+// cl -O2 Helmholtz.cpp -openmp:experimental
 
 //In Linux, compile with gcc coursework.c -o p -O2 -fopenmp -lm -fopt-info-vec-optimized
 //optimise from line 48 onwards (helmholtz function onwards)
@@ -112,9 +115,11 @@ void error_check(int m, int n, double alpha, double u[], double f[]) {
 
     u_norm = 0.0;
 
-#pragma parallel for reduction(+:u_norm) private(i,j) shared(u) schedule(static)
+//#pragma omp parallel for reduction(+:u_norm) private(i,j) shared(u) schedule(static)
+#pragma omp parallel for private(i,j) shared(u) schedule(static)
     for (j = 0; j < n; j++)
     {
+#pragma omp simd aligned(u:64) reduction(+:u_norm)
         for (i = 0; i < m; i++)
         {
             u_norm += u[i + j * m] * u[i + j * m];
@@ -126,9 +131,11 @@ void error_check(int m, int n, double alpha, double u[], double f[]) {
     u_true_norm = 0.0;
     error_norm = 0.0;
 
-#pragma parallel for reduction(+:error_norm,u_true_norm) private(i,j) firstprivate(u_true,x,y) shared(u)
+//#pragma omp parallel for reduction(+:error_norm,u_true_norm) private(i,j) firstprivate(u_true,x,y) shared(u)
+#pragma omp parallel for private(i,j) firstprivate(u_true,x,y) shared(u)
     for (j = 0; j < n; j++)
     {
+#pragma omp simd aligned(u:64) reduction(+:error_norm,u_true_norm)
         for (i = 0; i < m; i++)
         {
             x = (double)(2 * i - m + 1) / (double)(m - 1);
@@ -185,9 +192,11 @@ void jacobi(int m, int n, double alpha, double omega, double u[], double f[],
         /*
           Copy new solution into old.
         */
- #pragma omp parallel for private(j,i) shared(u_old,u) schedule(static)
+//#pragma omp parallel for private(j,i) shared(u_old,u) schedule(static)
+#pragma omp parallel for private(j,i) shared(u_old,u) schedule(static)
         for (j = 0; j < n; j++)
         {
+#pragma omp simd aligned(u,u_old:64)
             for (i = 0; i < m; i++)
             {
                 u_old[i + m * j] = u[i + m * j];
@@ -257,9 +266,11 @@ double* rhs_set(int m, int n, double alpha) {
     //f = (double*)malloc(m * n * sizeof(double)); //replace all malloc with mm_malloc and free with mm free
     f = (double*)_mm_malloc(m * n * sizeof(double), 64);
 
+//#pragma omp parallel for private(j,i) shared(f) schedule(static)
 #pragma omp parallel for private(j,i) shared(f) schedule(static)
     for (j = 0; j < n; j++)
     {
+#pragma omp simd aligned(f:64)
         for (i = 0; i < m; i++)// i wont be private by defualt 
         {
             f[i + j * m] = 0.0;

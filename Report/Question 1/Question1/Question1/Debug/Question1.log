@@ -1,4 +1,2 @@
 ﻿  Helmholtz.cpp
-C:\Git\COMP3001-coursework\Report\Question 1\Question1\Question1\Helmholtz.cpp(115,9): warning C4068: unknown pragma 'parallel'
-C:\Git\COMP3001-coursework\Report\Question 1\Question1\Question1\Helmholtz.cpp(129,9): warning C4068: unknown pragma 'parallel'
   Question1.vcxproj -> C:\Git\COMP3001-coursework\Report\Question 1\Question1\Debug\Question1.exe
