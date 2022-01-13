@@ -39,6 +39,7 @@ void Sobel();
 void write_image(char* filename, unsigned char** image);
 void openfile(char* filename, FILE** finput);
 int getint(FILE* fp);
+int compare();
 
 
 

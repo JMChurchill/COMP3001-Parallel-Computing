@@ -2,7 +2,7 @@
 
 #include "canny.h"
 
-unsigned char filt[N][M], gradient[N][M], grad2[N][M], edgeDir[N][M];
+unsigned char filt[N][M], gradient[N][M], grad2[N][M], edgeDir[N][M], compEdgeDir[N][M], compGradient[N][M];
 unsigned char gaussianMask[5][5];
 signed char GxMask[3][3], GyMask[3][3];
 
@@ -290,11 +290,18 @@ int image_detection() {
 
 	write_image(OUT_NAME1, print);
 
-	//Sobel();
+	
+	//define the timers measuring execution time
+	clock_t start_1, end_1; 
+	start_1 = clock();
 
+	//Sobel();
 	OptimisedSobel();
 
+	end_1 = clock();
+	printf("elapsed time = %f seconds\n", (float)(end_1 - start_1) / CLOCKS_PER_SEC);
 
+	compare();
 
 	/* write gradient to image*/
 
@@ -486,6 +493,101 @@ int getint(FILE* fp) /* adapted from "xv" source code */
 		if (c < '0' || c>'9') break;
 	}
 	return i;
+}
+
+
+int compare() {
+	int i, j;
+	unsigned int    row, col;
+	int rowOffset;
+	int colOffset;
+	int Gx;
+	int Gy;
+	float thisAngle;
+	int newAngle;
+	int newPixel;
+
+	unsigned char temp;
+
+
+	/* Declare Sobel masks */
+	GxMask[0][0] = -1; GxMask[0][1] = 0; GxMask[0][2] = 1;
+	GxMask[1][0] = -2; GxMask[1][1] = 0; GxMask[1][2] = 2;
+	GxMask[2][0] = -1; GxMask[2][1] = 0; GxMask[2][2] = 1;
+
+	GyMask[0][0] = -1; GyMask[0][1] = -2; GyMask[0][2] = -1;
+	GyMask[1][0] = 0; GyMask[1][1] = 0; GyMask[1][2] = 0;
+	GyMask[2][0] = 1; GyMask[2][1] = 2; GyMask[2][2] = 1;
+
+	/*---------------------------- Determine edge directions and gradient strengths -------------------------------------------*/
+	for (row = 1; row < N - 1; row++) {
+		for (col = 1; col < M - 1; col++) {
+
+			Gx = 0;
+			Gy = 0;
+
+			/* Calculate the sum of the Sobel mask times the nine surrounding pixels in the x and y direction */
+			for (rowOffset = -1; rowOffset <= 1; rowOffset++) {
+				for (colOffset = -1; colOffset <= 1; colOffset++) {
+
+					Gx += filt[row + rowOffset][col + colOffset] * GxMask[rowOffset + 1][colOffset + 1];
+					Gy += filt[row + rowOffset][col + colOffset] * GyMask[rowOffset + 1][colOffset + 1];
+				}
+			}
+
+			gradient[row][col] = (unsigned char)(sqrt(Gx * Gx + Gy * Gy));
+
+			thisAngle = (((atan2(Gx, Gy)) / 3.14159) * 180.0);
+
+			/* Convert actual edge direction to approximate value */
+			if (((thisAngle >= -22.5) && (thisAngle <= 22.5)) || (thisAngle >= 157.5) || (thisAngle <= -157.5))
+				newAngle = 0;
+			else if (((thisAngle > 22.5) && (thisAngle < 67.5)) || ((thisAngle > -157.5) && (thisAngle < -112.5)))
+				newAngle = 45;
+			else if (((thisAngle >= 67.5) && (thisAngle <= 112.5)) || ((thisAngle >= -112.5) && (thisAngle <= -67.5)))
+				newAngle = 90;
+			else if (((thisAngle > 112.5) && (thisAngle < 157.5)) || ((thisAngle > -67.5) && (thisAngle < -22.5)))
+				newAngle = 135;
+
+			compEdgeDir[row][col] = newAngle;
+		}
+	}
+
+	bool correct = true;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
+
+			if (compEdgeDir[i][j] == edgeDir[i][j]) {
+				//printf("correct");
+				//return 1;
+			}
+			else {
+				//printf("wrong");
+				//return 0;
+				correct = false;
+				break;
+			}
+		}
+	}
+	//if (compEdgeDir[1][1] == edgeDir[1][1]) {
+	//	printf("correct");
+	//	return 1;
+	//}
+	//else {
+	//	printf("wrong");
+	//	return 0;
+	//}
+	if (correct)
+	{
+		printf("\ncorrect\n");
+		return 1;
+	}
+	else {
+		printf("\nwrong\n");
+		return 0;
+	}
 }
 
 
