@@ -33,7 +33,7 @@ int image_detection();
 //void write_acc(char* filename, int angl);
 //void read_frame(char filename[80], unsigned char image[N][M]);
 void read_image(char filename[], unsigned char** image);
-void Gausian_blur();
+void GaussianBlur();
 void OptimisedSobel();
 void Sobel();
 void write_image(char* filename, unsigned char** image);
