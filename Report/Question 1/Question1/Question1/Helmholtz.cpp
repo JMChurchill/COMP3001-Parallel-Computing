@@ -192,7 +192,6 @@ void jacobi(int m, int n, double alpha, double omega, double u[], double f[],
         /*
           Copy new solution into old.
         */
-//#pragma omp parallel for private(j,i) shared(u_old,u) schedule(static)
 #pragma omp parallel for private(j,i) shared(u_old,u) schedule(static)
         for (j = 0; j < n; j++)
         {
