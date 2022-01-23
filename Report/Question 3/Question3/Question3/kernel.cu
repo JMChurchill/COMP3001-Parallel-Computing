@@ -5,6 +5,10 @@
 ------------------UNIVERSITY OF PLYMOUTH, SCHOOL OF ENGINEERING, COMPUTING AND MATHEMATICS---
 */
 
+// Optimised Elapsed time: 273.22 msecs
+// Optimised Flops value: 31.44 Gflops
+
+
 #include <cuda.h> 
 #include <cuda_runtime.h> 
 #include <device_launch_parameters.h>
@@ -14,11 +18,14 @@
 #include <math.h>
 #include <omp.h>
 
+//#define BILLION 1000000000
+#define TIMES_TO_RUN 1
+
+//#define ARITHMETICAL_OPS 2 * N * N * N * N
+#define ARITHMETICAL_OPS 8589934592
 
 #define N 256 //input size
-//#define N 4 //input size
 #define TILE 8
-
 
 __declspec(align(64)) float test[N][N][N], sum[N][N][N], A[N][N][N], C[N][N];
 
@@ -42,24 +49,14 @@ inline unsigned short int equal(float const a, float const b);
 	 int r = blockIdx.x * blockDim.x + threadIdx.x; //2d grid, 2d blocks
 	 int q = blockIdx.y * blockDim.y + threadIdx.y;
 	 int p = blockIdx.z * blockDim.z + threadIdx.z;
-	 //if(r == 0 && q == 0)
-	 //printf("\n%d, %d, %d", r, q,p);
 
-	 //for (int r = 0; r < N; r++)
-		 //for (int q = 0; q < N; q++)
 	 if (r < N && q < N && p < N) {
 
-			 //for (int p = 0; p < N; p++)
-				 for (int s = 0; s < N; s++) {
-					 //if (r == 0 && q == 0)
-						// printf("\n%d, %d, %d, %d", r, q,p,s);
-					 temp += device_A[r][q][s] * device_C[s][p];
-				 }
-				 device_sum[r][q][p] = temp;
+		 for (int s = 0; s < N; s++) {
+			 temp += device_A[r][q][s] * device_C[s][p];
+		 }
+		 device_sum[r][q][p] = temp;
 	 }
-
-
-
 
 	 //original
 	 /*for (int r = 0; r < N; r++)
@@ -69,9 +66,55 @@ inline unsigned short int equal(float const a, float const b);
 					 device_sum[r][q][p] = device_sum[r][q][p] + device_A[r][q][s] * device_C[s][p];*/
 }
 
+
+ //__global__ void diotgen_ver1T() {
+	// float temp = 0.0;
+
+	// int r = blockIdx.x * blockDim.x + threadIdx.x; //2d grid, 2d blocks
+	// int q = blockIdx.y * blockDim.y + threadIdx.y;
+	// int p = blockIdx.z * blockDim.z + threadIdx.z;
+	// //if(r == 0 && q == 0)
+	// //printf("\n%d, %d, %d", r, q,p);
+
+	// //for (int r = 0; r < N; r++)
+	//	 //for (int q = 0; q < N; q++)
+	// if (r < N && q < N && p < N) {
+
+	//	 //for (int p = 0; p < N; p++)
+	//	 for (int s = 0; s < N; s++) {
+	//		 //if (r == 0 && q == 0)
+	//			// printf("\n%d, %d, %d, %d", r, q,p,s);
+	//		 temp += device_A[r][q][s] * device_C[s][p];
+	//	 }
+	//	 device_sum[r][q][p] = temp;
+	// }
+
+
+
+
+	// //original
+	// /*for (int r = 0; r < N; r++)
+	//	 for (int q = 0; q < N; q++)
+	//		 for (int p = 0; p < N; p++)
+	//			 for (int s = 0; s < N; s++)
+	//				 device_sum[r][q][p] = device_sum[r][q][p] + device_A[r][q][s] * device_C[s][p];*/
+ //}
+
+ __global__ void unoptimiseddiotgen_ver1() {
+	//original
+	for (int r = 0; r < N; r++)
+		for (int q = 0; q < N; q++)
+			for (int p = 0; p < N; p++)
+				for (int s = 0; s < N; s++)
+					device_sum[r][q][p] = device_sum[r][q][p] + device_A[r][q][s] * device_C[s][p];
+ }
+
+
+
 int main()
 {
 	cudaError_t cudaStatus;
+	double my_flops;
 
 	//------create the cuda timers------
 	cudaEvent_t start, stop;
@@ -85,8 +128,6 @@ int main()
 	printf("\n Device: %s \n", prop.name);
 
 	init(); //initialize host arrays
-
-	//float *d_T, *d_A, *d_C;
 
 	/* Copy the Test array from the HOST memory to the DEVICE memory */
 	cudaStatus = cudaMemcpyToSymbol(device_T, test, N * N * N * sizeof(float));
@@ -108,43 +149,37 @@ int main()
 		printf("\ncudaMemcpy failed!");
 		return -1;
 	}
-	//cudaGetSymbolAddress((void**)&d_T, device_T);
-	//cudaGetSymbolAddress((void**)&d_A, device_A);
-	//cudaGetSymbolAddress((void**)&d_C, device_C);
-
 
 	cudaEventRecord(start, 0); //get timer value
 
+	clock_t start_1, end_1; //ignore this for  now
+	start_1 = clock();
 
 	//dim3 dimBlock(1, 1, 1);
 	//dim3 dimGrid(1, 1, 1);
 
 	dim3 dimBlock(TILE, TILE, TILE);
-	//dim3 dimBlock(32, 32, 1);
-	//dim3 dimGrid(N/32, N/32,1);
 	dim3 dimGrid(N/TILE, N/TILE, N/TILE);
 
-
-
-	//dim3 dimBlock(TILE, 8, 1);
-	//dim3 dimGrid((N + TILE - 1) / TILE, (N + TILE - 1) / TILE, 1);
-
 	//diotgen_ver1<float> << <dimGrid, dimBlock >> > (d_T, d_A, d_C);
-	//for (int it = 0; it < N; it++)
+	for (int it = 0; it < TIMES_TO_RUN; it++)
 	{
+		//unoptimiseddiotgen_ver1 << <dimGrid, dimBlock >> > ();
 		diotgen_ver1 << <dimGrid, dimBlock >> > ();
-
 	}
 	//default();
 
-
-
+	end_1 = clock(); //end the timer
+	printf("%ld", ARITHMETICAL_OPS);
 	cudaEventRecord(stop, 0);  //get timer value
 	cudaEventSynchronize(stop);
 	cudaEventElapsedTime(&elapsed_time, start, stop);
 	printf("\nElapsed time in msecs = %f", elapsed_time);
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
+
+	double flops = (double)((double)ARITHMETICAL_OPS) / (elapsed_time / TIMES_TO_RUN);
+	printf("\nGflops achieved %f ", flops / 1000000);
 
 	/* Copy back the result from the DEVICE memory to the HOST memory */
 	cudaStatus = cudaMemcpyFromSymbol(sum, device_sum, N * N * N * sizeof(float));
@@ -248,8 +283,3 @@ int Compare() {
 				}
 	return 0;
 }
-
-
-
-
-
